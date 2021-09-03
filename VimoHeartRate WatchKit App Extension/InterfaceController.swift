@@ -96,8 +96,8 @@ class InterfaceController: WKInterfaceController, HKWorkoutSessionDelegate {
             //finish the current workout
             self.workoutActive = false
             self.startStopButton.setTitle("Start")
-            if let workout = self.session {
-                healthStore.end(workout)
+            if self.session != nil {
+                session?.end()
             }
         } else {
             //start a new workout
@@ -121,13 +121,13 @@ class InterfaceController: WKInterfaceController, HKWorkoutSessionDelegate {
         workoutConfiguration.locationType = .indoor
         
         do {
-            session = try HKWorkoutSession(configuration: workoutConfiguration)
+            session = try HKWorkoutSession(healthStore: healthStore, configuration: workoutConfiguration)
             session?.delegate = self
         } catch {
             fatalError("Unable to create the workout session!")
         }
         
-        healthStore.start(self.session!)
+        session?.startActivity(with: Date())
     }
     
     func createHeartRateStreamingQuery(_ workoutStartDate: Date) -> HKQuery? {
